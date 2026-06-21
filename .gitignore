@@ -51,6 +51,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Uploaded media from testing
+app/static/uploads/
+
 # Translations
 *.mo
 *.pot
