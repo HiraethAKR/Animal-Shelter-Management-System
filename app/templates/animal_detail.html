@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{{ animal.name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ animal.name }}</h1>
+
+    {% if animal.image_url %}
+    <img src="{{ url_for('static', filename=animal.image_url) }}" alt="{{ animal.name }}" class="animal-photo">
+    {% endif %}
+
+    <table class="detail-table">
+        <tr><td>Species</td><td>{{ animal.species }}</td></tr>
+        <tr><td>Breed</td><td>{{ animal.breed or "Unknown" }}</td></tr>
+        <tr><td>Sex</td><td>{{ animal.sex }}</td></tr>
+        <tr><td>Birth Date</td><td>{{ animal.birth_date or "Unknown" }}</td></tr>
+        <tr><td>Age</td><td>{{ animal.age or "Unknown" }}</td></tr>
+        <tr><td>Status</td><td><span class="status {{ animal.status }}">{{ animal.status }}</span></td></tr>
+        <tr><td>Notes</td><td>{{ animal.notes or "None" }}</td></tr>
+    </table>
+
+    {% if animal.status == 'available' and not session.staff_id %}
+    <p class="mb-2">
+        <a href="{{ url_for('public.adopt', animal_id=animal.animal_id) }}" class="btn">Adopt this Animal</a>
+    </p>
+    {% endif %}
+
+    {% if session.staff_id %}
+    <p class="mb-2">
+        <a href="{{ url_for('public.animal_edit_request', animal_id=animal.animal_id) }}" class="btn">
+            {{ 'Edit' if session.staff_role == 'admin' else 'Propose Edit' }}
+        </a>
+        <a href="{{ url_for('staff.propose_medical_record', animal_id=animal.animal_id, next=request.url) }}" class="btn">Add Medical Record</a>
+        {% if session.staff_role == 'admin' %}
+        <form method="POST" action="{{ url_for('staff.delete_animal', animal_id=animal.animal_id) }}" style="display:inline;" onsubmit="return confirm('Delete this animal and all its records? This cannot be undone.');">
+            <button type="submit" class="danger" aria-label="Delete animal {{ animal.name }}">Delete Animal</button>
+        </form>
+        {% endif %}
+    </p>
+    {% endif %}
+
+    <h2>Medical History</h2>
+    {% if medical_records %}
+        {% for record in medical_records %}
+        <div class="record-block">
+            <p><strong>Visit Date:</strong> {{ record.visit_date }}</p>
+            <p><strong>Outcome:</strong> {{ record.outcome or "N/A" }}</p>
+            
+            {% if record.treatments %}
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Medication</th>
+                    <th>Description</th>
+                    <th>Cost</th>
+                    <th>Vet</th>
+                </tr>
+                {% for t in record.treatments %}
+                <tr>
+                    <td>{{ t.treatment_type }}</td>
+                    <td>{{ t.medication or "-" }}</td>
+                    <td>{{ t.description or "-" }}</td>
+                    <td>₱{{ "%.2f"|format(t.cost) }}</td>
+                    <td>{{ t.vet_first }} {{ t.vet_last }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="muted"><em>No treatments recorded for this visit.</em></p>
+            {% endif %}
+
+            {% if session.staff_id %}
+            <p>
+                <a href="{{ url_for('staff.propose_treatment', record_id=record.record_id, next=request.url) }}">+ Add Treatment</a>
+                {% for t in record.treatments %}
+                <a href="{{ url_for('staff.edit_treatment', treatment_id=t.treatment_id) }}" style="margin-left: 10px; font-size: 0.85rem;">Edit {{ t.treatment_type }}</a>
+                {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="muted">No medical records found.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('public.animal_list') }}">← Back to animal list</a></p>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Edit Requests{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Pending Edit Requests</h1>
+
+    <form method="GET" action="{{ url_for('staff.tickets') }}" style="margin-bottom: 15px;">
+        <select name="table_name">
+            <option value="">All Tables</option>
+            <option value="Animal" {% if request.args.get('table_name') == 'Animal' %}selected{% endif %}>Animal</option>
+            <option value="Vet" {% if request.args.get('table_name') == 'Vet' %}selected{% endif %}>Vet</option>
+            <option value="Medical_Record" {% if request.args.get('table_name') == 'Medical_Record' %}selected{% endif %}>Medical Record</option>
+            <option value="Treatment" {% if request.args.get('table_name') == 'Treatment' %}selected{% endif %}>Treatment</option>
+        </select>
+        <select name="record_type">
+            <option value="">All Types</option>
+            <option value="create" {% if request.args.get('record_type') == 'create' %}selected{% endif %}>Create</option>
+            <option value="update" {% if request.args.get('record_type') == 'update' %}selected{% endif %}>Update</option>
+        </select>
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search in changes..." style="width: 180px;">
+        <button type="submit">Filter</button>
+        <a href="{{ url_for('staff.tickets') }}">Clear</a>
+    </form>
+
+    {% if requests %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Table</th>
+                <th>Type</th>
+                <th>Details</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+            </tr>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req.record_id }}</td>
+                <td>{{ req.table_name }}</td>
+                <td>{{ req.record_type }}</td>
+                <td>
+                    {% if req.record_type == 'update' and req.current %}
+                        <table style="font-size: 0.8rem; margin-top: 4px; border: none; box-shadow: none;">
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 4px 6px;">Field</th>
+                                <th style="padding: 4px 6px;">Current</th>
+                                <th style="padding: 4px 6px;">Proposed</th>
+                            </tr>
+                            {% for key, value in req.fields.items() %}
+                            <tr>
+                                <td style="padding: 4px 6px; font-weight: 600;">{{ key }}</td>
+                                <td style="padding: 4px 6px; color: #888;">{{ req.current.get(key, '-') or '-' }}</td>
+                                <td style="padding: 4px 6px;"><b>{{ value or '-' }}</b></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        {% for key, value in req.fields.items() %}
+                            <b>{{ key }}</b>: {{ value or "-" }}<br>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                <td>{{ req.submitted_at }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('staff.approve_ticket', record_id=req.record_id) }}" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Approve this request?');" aria-label="Approve request {{ req.record_id }}">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('staff.reject_ticket', record_id=req.record_id) }}" style="display:inline;">
+                        <button type="submit" class="danger" onclick="return confirm('Reject this request?');" aria-label="Reject request {{ req.record_id }}">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {{ render_pagination('staff.tickets', page, pages, request.args) }}
+    {% else %}
+        <p>No pending requests.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>
+{% endblock %}

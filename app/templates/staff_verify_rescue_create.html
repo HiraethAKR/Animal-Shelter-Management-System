@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Rescue & Create Animal{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>Verify Rescue & Create Animal</h1>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            {% if rescue.photo_url %}
+            <img src="{{ url_for('static', filename=rescue.photo_url) }}" style="max-width: 280px; border-radius: 8px; border: 1px solid #ccc; display: block; margin: 0 auto 12px;">
+            {% endif %}
+            <p><strong>Reporter:</strong> {{ rescue.first_name }} {{ rescue.last_name }}</p>
+            <p><strong>Location:</strong> {{ rescue.location }}</p>
+            <p><strong>Species:</strong> {{ rescue.animal_species }}</p>
+            {% if rescue.notes %}
+            <p><strong>Notes:</strong> {{ rescue.notes }}</p>
+            {% endif %}
+        </div>
+
+        <h2>Create Animal</h2>
+        <p class="muted" style="text-align: center;">Species is pre-filled from the rescue report. Fill in the rest.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <p>
+                <label>Name: <input type="text" name="name" required></label>
+            </p>
+            <p>
+                <label>Species:
+                    <select name="species" required>
+                        {% for val in ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'] %}
+                        <option value="{{ val }}" {% if rescue.animal_species == val %}selected{% endif %}>{{ val }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Breed: <input type="text" name="breed"></label>
+            </p>
+            <p>
+                <label>Sex:
+                    <select name="sex" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Birth Date: <input type="date" name="birth_date"></label>
+            </p>
+            <p>
+                <label>Photo: <input type="file" name="image" accept="image/*" onchange="previewImage(this, 'imagePreview')"></label>
+                {% if rescue.photo_url %}
+                <span class="muted small">Leave blank to use rescue photo above.</span>
+                {% endif %}
+                <img id="imagePreview" style="display: none; max-width: 200px; border-radius: 6px; margin-top: 8px; border: 1px solid #ccd6e0;">
+            </p>
+            <p>
+                <label>Notes:<br><textarea name="notes" rows="3" cols="40"></textarea></label>
+            </p>
+            <p>
+                <button type="submit">Verify & Create Animal</button>
+                <a href="{{ url_for('staff.applications') }}" class="btn secondary">Cancel</a>
+            </p>
+        </form>
+    </div>
+
+    <script>
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    </script>
+{% endblock %}

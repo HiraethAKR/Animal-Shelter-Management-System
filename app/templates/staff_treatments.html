@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Treatments{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Medical Record #{{ record.record_id }}</h1>
+    <p>
+        <strong>Animal:</strong> {{ record.animal_name }} |
+        <strong>Date:</strong> {{ record.visit_date }} |
+        <strong>Outcome:</strong> {{ record.outcome or "N/A" }}
+    </p>
+
+    <p><a href="{{ url_for('staff.propose_treatment', record_id=record.record_id) }}">+ Propose Treatment</a></p>
+
+    {% if treatments %}
+        <table>
+            <tr><th>Type</th><th>Medication</th><th>Description</th><th>Cost</th><th>Vet</th><th>Actions</th></tr>
+            {% for t in treatments %}
+            <tr>
+                <td>{{ t.treatment_type }}</td>
+                <td>{{ t.medication or "-" }}</td>
+                <td>{{ t.description or "-" }}</td>
+                <td>₱{{ "%.2f"|format(t.cost) }}</td>
+                <td>{{ t.vet_first }} {{ t.vet_last }}</td>
+                <td>
+                    <a href="{{ url_for('staff.edit_treatment', treatment_id=t.treatment_id) }}">Edit</a>
+                    {% if session.staff_role == 'admin' %}
+                    <form method="POST" action="{{ url_for('staff.delete_treatment', treatment_id=t.treatment_id) }}" style="display:inline;" onsubmit="return confirm('Delete this treatment?');">
+                        <button type="submit" aria-label="Delete treatment {{ t.treatment_type }}">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No treatments recorded.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('staff.medical_record_list') }}">Back to records</a></p>
+{% endblock %}

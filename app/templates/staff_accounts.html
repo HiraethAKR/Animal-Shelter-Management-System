@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Staff Accounts{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Staff Accounts</h1>
+
+    <form method="GET" action="{{ url_for('staff.accounts') }}" style="margin-bottom: 15px;">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by name or username..." style="width: 220px;">
+        <select name="role">
+            <option value="">All Roles</option>
+            <option value="admin" {% if request.args.get('role') == 'admin' %}selected{% endif %}>Admin</option>
+            <option value="staff" {% if request.args.get('role') == 'staff' %}selected{% endif %}>Staff</option>
+        </select>
+        <select name="status">
+            <option value="">All Statuses</option>
+            <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+        <button type="submit">Search</button>
+        <a href="{{ url_for('staff.accounts') }}">Clear</a>
+    </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for s in staff_list %}
+        <tr>
+            <td>{{ s.staff_id }}</td>
+            <td>{{ s.username }}</td>
+            <td>{{ s.first_name }} {{ s.last_name }}</td>
+            <td>
+                {% if s.staff_id == session.staff_id %}
+                    <strong>{{ s.role | title }}</strong> <em>(You)</em>
+                {% else %}
+                    <form method="POST" action="{{ url_for('staff.change_role', staff_id=s.staff_id) }}" style="display:inline;">
+                        <select name="role" onchange="this.form.submit()">
+                            <option value="staff" {% if s.role == 'staff' %}selected{% endif %}>Staff</option>
+                            <option value="admin" {% if s.role == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </form>
+                {% endif %}
+            </td>
+            <td>{{ 'Active' if s.status else 'Inactive' }}</td>
+            <td>
+                {% if s.staff_id == session.staff_id %}
+                    <em>(You)</em>
+                {% else %}
+                    <form method="POST" action="{{ url_for('staff.toggle_status', staff_id=s.staff_id) }}" style="display:inline;">
+                        <button type="submit" class="{{ 'danger' if s.status else '' }}" aria-label="{{ 'Deactivate' if s.status else 'Activate' }} account {{ s.username }}">
+                            {{ 'Deactivate' if s.status else 'Activate' }}
+                        </button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {{ render_pagination('staff.accounts', page, pages, request.args) }}
+
+    <p><a href="{{ url_for('staff.pending_staff') }}">Pending Registrations</a></p>
+    <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>
+{% endblock %}

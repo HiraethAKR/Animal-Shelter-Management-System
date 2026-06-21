@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Staff Dashboard</h1>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <span class="number">{{ total_animals }}</span>
+            <span class="label">Total Animals</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">{{ available_animals }}</span>
+            <span class="label">Available</span>
+        </div>
+        <div class="stat-card">
+            <span class="number">{{ pending_tickets }}</span>
+            <span class="label"><a href="{{ url_for('staff.tickets') }}">Pending Tickets</a></span>
+        </div>
+        <div class="stat-card">
+            <span class="number">{{ pending_rescues }}</span>
+            <span class="label"><a href="{{ url_for('staff.applications', status='pending') }}">Pending Rescues</a></span>
+        </div>
+        <div class="stat-card">
+            <span class="number">{{ pending_adoptions }}</span>
+            <span class="label"><a href="{{ url_for('staff.applications', status='pending') }}">Pending Adoptions</a></span>
+        </div>
+        <div class="stat-card">
+            <span class="number">{{ pending_fosters }}</span>
+            <span class="label"><a href="{{ url_for('staff.applications', status='pending') }}">Pending Fosters</a></span>
+        </div>
+        {% if session.staff_role == 'admin' and pending_staff > 0 %}
+        <div class="stat-card alert">
+            <span class="number">{{ pending_staff }}</span>
+            <span class="label"><a href="{{ url_for('staff.pending_staff') }}">Pending Staff</a></span>
+        </div>
+        {% endif %}
+    </div>
+
+    <h2>Quick Actions</h2>
+    <p class="mb-2">
+        <a href="{{ url_for('public.animal_create') }}" class="btn">+ Add Animal</a>
+        <a href="{{ url_for('staff.propose_medical_record') }}" class="btn">+ Add Medical Record</a>
+        <a href="{{ url_for('staff.vet_new') }}" class="btn">+ Add Vet</a>
+        {% if session.staff_role == 'admin' %}
+        <a href="{{ url_for('staff.export_animals_csv') }}" class="btn secondary">Export Animals (CSV)</a>
+        {% endif %}
+    </p>
+
+    {% if session.staff_role == 'admin' %}
+    <h2>Recent Edit Requests</h2>
+    {% if recent_tickets %}
+        <table>
+            <tr><th>ID</th><th>Table</th><th>Type</th><th>Submitted</th><th>Action</th></tr>
+            {% for t in recent_tickets %}
+            <tr>
+                <td>{{ t.record_id }}</td>
+                <td>{{ t.table_name }}</td>
+                <td>{{ t.record_type }}</td>
+                <td>{{ t.submitted_at }}</td>
+                <td><a href="{{ url_for('staff.tickets') }}">Review</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p class="muted">No pending edit requests.</p>
+    {% endif %}
+    {% endif %}
+{% endblock %}

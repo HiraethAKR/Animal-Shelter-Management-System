@@ -1,0 +1,15 @@
+{% set active = request.endpoint %}
+
+<p class="staff-nav">
+    <a href="{{ url_for('staff.dashboard') }}" class="{% if active == 'staff.dashboard' %}active{% endif %}">Dashboard</a>
+    {% if session.staff_role == 'admin' %}
+    <a href="{{ url_for('staff.tickets') }}" class="{% if active == 'staff.tickets' %}active{% endif %}">Edit Requests</a>
+    {% endif %}
+    <a href="{{ url_for('staff.applications') }}" class="{% if active == 'staff.applications' %}active{% endif %}">Applications</a>
+    {% if session.staff_role == 'admin' %}
+    <a href="{{ url_for('staff.donation_info_list') }}" class="{% if active == 'staff.donation_info_list' or active == 'staff.donation_info_new' or active == 'staff.donation_info_edit' %}active{% endif %}">Donation Info</a>
+    <a href="{{ url_for('staff.accounts') }}" class="{% if active == 'staff.accounts' %}active{% endif %}">Staff Accounts</a>
+    {% endif %}
+    <a href="{{ url_for('staff.vet_list') }}" class="{% if active == 'staff.vet_list' or active == 'staff.vet_new' or active == 'staff.vet_edit_request' %}active{% endif %}">Vets</a>
+    <a href="{{ url_for('staff.medical_record_list') }}" class="{% if active == 'staff.medical_record_list' or active == 'staff.propose_medical_record' or active == 'staff.medical_record_edit' or active == 'staff.medical_record_treatments' or active == 'staff.propose_treatment' or active == 'staff.edit_treatment' %}active{% endif %}">Medical Records</a>
+</p>

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Link Rescue to Animal{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>Link Rescue to Animal</h1>
+
+        <h3>Rescue Report #{{ rescue.rescue_id }}</h3>
+        <p><strong>Reporter:</strong> {{ rescue.first_name }} {{ rescue.last_name }}</p>
+        <p><strong>Location:</strong> {{ rescue.location or "-" }}</p>
+        <p><strong>Notes:</strong> {{ rescue.notes or "-" }}</p>
+
+        <h2>Option 1: Link Existing Animal</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="existing">
+            <p>
+                <label>Animal:
+                    <select name="animal_id" required>
+                        <option value="">-- Choose --</option>
+                        {% for a in animals %}
+                        <option value="{{ a.animal_id }}">
+                            {{ a.name }} — {{ a.species }}{% if a.breed %} ({{ a.breed }}){% endif %} — {{ a.status }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </p>
+            <p><button type="submit">Link Existing Animal</button></p>
+        </form>
+
+        <h2>Option 2: Create New Animal</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="new">
+            <p>
+                <label>Name: <input type="text" name="name" required></label>
+            </p>
+            <p>
+                <label>Species:
+                    <select name="species" required>
+                        <option value="Dog">Dog</option>
+                        <option value="Cat">Cat</option>
+                        <option value="Bird">Bird</option>
+                        <option value="Rabbit">Rabbit</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Breed: <input type="text" name="breed"></label>
+            </p>
+            <p>
+                <label>Sex:
+                    <select name="sex" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Birth Date: <input type="date" name="birth_date"></label>
+            </p>
+            <p>
+                <label>Notes:<br><textarea name="notes" rows="3" cols="40"></textarea></label>
+            </p>
+            <p><button type="submit">Create & Link Animal</button></p>
+        </form>
+
+        <p class="center-link"><a href="{{ url_for('staff.applications') }}">Cancel</a></p>
+    </div>
+{% endblock %}

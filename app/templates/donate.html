@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+    <h1>Support Our Shelter</h1>
+    <p>Your generosity helps us care for animals in need. Thank you!</p>
+
+    {% if channels %}
+        {% for c in channels %}
+            <h3>{{ c.label }}</h3>
+            {% if c.is_image %}
+                <img src="{{ c.content }}" alt="{{ c.label }}" style="max-width: 300px;">
+            {% else %}
+                <p>{{ c.content }}</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>Donation information coming soon.</p>
+    {% endif %}
+{% endblock %}

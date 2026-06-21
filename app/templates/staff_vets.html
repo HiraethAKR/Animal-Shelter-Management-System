@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Vets{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Veterinarians</h1>
+
+    <form method="GET" action="{{ url_for('staff.vet_list') }}" style="margin-bottom: 15px;">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by name or affiliation..." style="width: 250px;">
+        <button type="submit">Search</button>
+        <a href="{{ url_for('staff.vet_list') }}">Clear</a>
+    </form>
+
+    <p><a href="{{ url_for('staff.vet_new') }}">+ Add New Vet</a></p>
+
+    {% if vets %}
+        <table>
+            <tr><th>Name</th><th>Affiliation</th><th>Contact</th><th>Actions</th></tr>
+            {% for v in vets %}
+            <tr>
+                <td>{{ v.first_name }} {{ v.last_name }}</td>
+                <td>{{ v.affiliation or "-" }}</td>
+                <td>{{ v.contacts or "-" }}</td>
+                <td>
+                    <a href="{{ url_for('staff.vet_edit_request', vet_id=v.vet_id) }}">Edit</a>
+                    {% if session.staff_role == 'admin' %}
+                    <form method="POST" action="{{ url_for('staff.vet_delete', vet_id=v.vet_id) }}" style="display:inline;" onsubmit="return confirm('Delete this vet?');">
+                        <button type="submit" aria-label="Delete vet {{ v.first_name }} {{ v.last_name }}">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {{ render_pagination('staff.vet_list', page, pages, request.args) }}
+    {% else %}
+        <p>No vets found.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Animals{% endblock %}
+
+{% block content %}
+    {% if session.staff_id %}
+    <p class="mb-2">
+        <a href="{{ url_for('public.animal_create') }}" class="btn">+ Add Animal</a>
+        {% if session.staff_role == 'admin' %}
+        <a href="{{ url_for('staff.export_animals_csv') }}" class="btn secondary">Export CSV</a>
+        {% endif %}
+    </p>
+    {% endif %}
+
+    <h2>Find an Animal</h2>
+    <form method="GET" action="{{ url_for('public.animal_list') }}" class="filter-bar">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by name or breed...">
+        <select name="species">
+            <option value="">All Species</option>
+            {% for val in ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'] %}
+            <option value="{{ val }}" {% if request.args.get('species') == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+        </select>
+        <select name="status">
+            <option value="">All Statuses</option>
+            {% for val in ['available', 'pending', 'adopted', 'fostered', 'unavailable'] %}
+            <option value="{{ val }}" {% if request.args.get('status') == val %}selected{% endif %}>{{ val | title }}</option>
+            {% endfor %}
+        </select>
+        <select name="sex">
+            <option value="">All Sexes</option>
+            <option value="Male" {% if request.args.get('sex') == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if request.args.get('sex') == 'Female' %}selected{% endif %}>Female</option>
+        </select>
+        <select name="sort" onchange="this.form.submit()">
+            <option value="name" {% if request.args.get('sort', 'name') == 'name' %}selected{% endif %}>Name (A-Z)</option>
+            <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Newest First</option>
+        </select>
+        <button type="submit">Search</button>
+        <a href="{{ url_for('public.animal_list') }}" class="btn secondary">Clear</a>
+    </form>
+
+    <p class="muted small">{{ total }} animal(s) found</p>
+
+    {% if animals %}
+        <ul class="animal-grid">
+        {% for a in animals %}
+            <li class="animal-card">
+                {% if a.image_url %}
+                <img src="{{ url_for('static', filename=a.image_url) }}" alt="{{ a.name }}">
+                {% else %}
+                <div style="height: 160px; background: #e0e6ed; display: flex; align-items: center; justify-content: center; color: #888; font-size: 0.85rem;">No photo</div>
+                {% endif %}
+                <div class="info">
+                    <p class="name"><a href="{{ url_for('public.animal_detail', animal_id=a.animal_id) }}">{{ a.name }}</a></p>
+                    <p class="meta">{{ a.species }}{% if a.breed %} — {{ a.breed }}{% endif %}{% if a.age %} — {{ a.age }}{% endif %}</p>
+                    <span class="status {{ a.status }}">{{ a.status }}</span>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+
+        {{ render_pagination('public.animal_list', page, pages, request.args) }}
+    {% else %}
+        <p>No animals found.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if item else 'New' }} Donation Info{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>{{ 'Edit' if item else 'Add' }} Donation Channel</h1>
+
+        <form method="POST">
+            <p>
+                <label>Label: <input type="text" name="label" value="{{ item.label if item else '' }}" required></label>
+            </p>
+            <p>
+                <label>Content:<br>
+                    <textarea name="content" rows="4" cols="50" required>{{ item.content if item else '' }}</textarea>
+                </label>
+            </p>
+            <p>
+                <label>
+                    <input type="checkbox" name="is_image" {% if item and item.is_image %}checked{% endif %}>
+                    This is an image (content should be a URL/path)
+                </label>
+            </p>
+            <p>
+                <label>Display Order: <input type="number" name="display_order" value="{{ item.display_order if item else '0' }}"></label>
+            </p>
+            {% if item %}
+            <p>
+                <label>
+                    <input type="checkbox" name="is_active" {% if item.is_active %}checked{% endif %}>
+                    Active
+                </label>
+            </p>
+            {% endif %}
+            <p>
+                <button type="submit">{{ 'Update' if item else 'Add' }}</button>
+            </p>
+        </form>
+
+        <p class="center-link"><a href="{{ url_for('staff.donation_info_list') }}">Back to list</a></p>
+    </div>
+{% endblock %}

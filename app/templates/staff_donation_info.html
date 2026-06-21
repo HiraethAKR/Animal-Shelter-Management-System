@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Donation Info{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Donation Information</h1>
+
+    <p><a href="{{ url_for('staff.donation_info_new') }}">+ Add New Channel</a></p>
+
+    {% if items %}
+        <table>
+            <tr>
+                <th>Order</th>
+                <th>Label</th>
+                <th>Content</th>
+                <th>Type</th>
+                <th>Active</th>
+                <th>Created</th>
+                <th>Updated By</th>
+                <th>Actions</th>
+            </tr>
+            {% for i in items %}
+            <tr>
+                <td>{{ i.display_order }}</td>
+                <td>{{ i.label }}</td>
+                <td>{{ i.content[:50] }}{% if i.content|length > 50 %}...{% endif %}</td>
+                <td>{{ 'Image' if i.is_image else 'Text' }}</td>
+                <td>{{ 'Yes' if i.is_active else 'No' }}</td>
+                <td>{{ i.created_at }}</td>
+                <td>{{ i.updated_by_name or 'Unknown' }}</td>
+                <td>
+                    <a href="{{ url_for('staff.donation_info_edit', info_id=i.info_id) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('staff.donation_info_delete', info_id=i.info_id) }}" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Delete this?')" aria-label="Delete donation info {{ i.label }}">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No donation info set up yet.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('staff.tickets') }}">Back to staff dashboard</a></p>
+{% endblock %}

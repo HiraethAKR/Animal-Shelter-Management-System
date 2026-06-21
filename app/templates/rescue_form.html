@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Report a Rescue{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Report an Animal Needing Rescue</h1>
+
+    <form method="POST" action="{{ url_for('public.rescue') }}" enctype="multipart/form-data">
+        <h3>Your Information</h3>
+        <p>
+            <label>First Name: <input type="text" name="first_name" value="{{ form_data.first_name or '' }}" required></label>
+        </p>
+        <p>
+            <label>Last Name: <input type="text" name="last_name" value="{{ form_data.last_name or '' }}" required></label>
+        </p>
+
+        <h3>Contacts</h3>
+        <div id="contacts-container">
+            {% if form_data.contacts %}
+                {% for c in form_data.contacts %}
+                <div class="contact-row" style="margin-bottom: 5px;">
+                    <select name="contact_type[]">
+                        <option value="phone" {% if c.contact_type == 'phone' %}selected{% endif %}>Phone</option>
+                        <option value="email" {% if c.contact_type == 'email' %}selected{% endif %}>Email</option>
+                    </select>
+                    <input type="text" name="contact_value[]" value="{{ c.contact_value }}" placeholder="Contact value">
+                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="contact-row" style="margin-bottom: 5px;">
+                    <select name="contact_type[]">
+                        <option value="phone">Phone</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <input type="text" name="contact_value[]" placeholder="Contact value">
+                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                </div>
+            {% endif %}
+        </div>
+        <p>
+            <button type="button" onclick="addContact()">+ Add Contact</button>
+        </p>
+
+        <h3>Animal Information <span style="color: #c33;">*</span></h3>
+        <p>
+            <label>Photo: <span style="color: #c33;">*</span>
+                <input type="file" name="photo" accept="image/*" required onchange="previewImage(this, 'photoPreview')">
+            </label>
+            <span class="muted small">A clear photo helps us identify the animal.</span>
+            <img id="photoPreview" style="display: none; max-width: 200px; border-radius: 6px; margin-top: 8px; border: 1px solid #ccd6e0;">
+        </p>
+        <p>
+            <label>Species: <span style="color: #c33;">*</span>
+                <select name="animal_species" required>
+                    <option value="">-- Select --</option>
+                    {% for val in ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'] %}
+                    <option value="{{ val }}" {% if form_data.animal_species == val %}selected{% endif %}>{{ val }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </p>
+
+        <h3>Rescue Details</h3>
+        <p>
+            <label>Location Found: <span style="color: #c33;">*</span>
+                <input type="text" name="location" value="{{ form_data.location or '' }}" required placeholder="Street, barangay, city...">
+            </label>
+        </p>
+        <p>
+            <label>Notes:<br>
+                <textarea name="notes" rows="4" cols="40" placeholder="Breed, color, condition, distinguishing marks, or any other details...">{{ form_data.notes or '' }}</textarea>
+            </label>
+        </p>
+        <p>
+            <button type="submit">Submit Report</button>
+        </p>
+    </form>
+
+    <p class="center-link"><a href="{{ url_for('public.animal_list') }}">Back to animal list</a></p>
+
+    <script>
+    function addContact() {
+        const container = document.getElementById('contacts-container');
+        const row = document.createElement('div');
+        row.className = 'contact-row';
+        row.style.marginBottom = '5px';
+        row.innerHTML = `
+            <select name="contact_type[]">
+                <option value="phone">Phone</option>
+                <option value="email">Email</option>
+            </select>
+            <input type="text" name="contact_value[]" placeholder="Contact value">
+            <button type="button" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        container.appendChild(row);
+    }
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    </script>
+</div>
+{% endblock %}

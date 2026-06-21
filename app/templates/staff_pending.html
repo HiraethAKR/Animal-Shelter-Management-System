@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Staff{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Pending Staff Registrations</h1>
+
+    {% if pending %}
+        <table>
+            <tr>
+                <th>Staff ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            {% for s in pending %}
+            <tr>
+                <td>{{ s.staff_id }}</td>
+                <td>{{ s.username }}</td>
+                <td>{{ s.first_name }} {{ s.last_name }}</td>
+                <td>{{ s.role }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('staff.approve_staff', staff_id=s.staff_id) }}" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Approve this staff registration?');" aria-label="Approve {{ s.username }}">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('staff.reject_staff', staff_id=s.staff_id) }}" style="display:inline;">
+                        <button type="submit" onclick="return confirm('Reject this staff registration?');" aria-label="Reject {{ s.username }}">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No pending staff registrations.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('staff.tickets') }}">Back to tickets</a></p>
+{% endblock %}

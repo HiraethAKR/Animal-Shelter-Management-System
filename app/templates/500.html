@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <h1>🐾 Oops! Something Went Wrong</h1>
+    <p>Our server encountered an unexpected error. Please try again later.</p>
+    <p><a href="{{ url_for('public.animal_list') }}" class="btn">Back to Animals</a></p>
+</div>
+{% endblock %}

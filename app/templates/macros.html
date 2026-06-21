@@ -1,0 +1,25 @@
+{% macro render_pagination(endpoint, page, pages, args={}) %}
+    {% if pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for(endpoint, page=page-1, **args) }}">← Prev</a>
+        {% else %}
+            <span style="color: #ccc;">← Prev</span>
+        {% endif %}
+        
+        {% for p in range(1, pages + 1) %}
+            {% if p == page %}
+                <strong>{{ p }}</strong>
+            {% else %}
+                <a href="{{ url_for(endpoint, page=p, **args) }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+        
+        {% if page < pages %}
+            <a href="{{ url_for(endpoint, page=page+1, **args) }}">Next →</a>
+        {% else %}
+            <span style="color: #ccc;">Next →</span>
+        {% endif %}
+    </div>
+    {% endif %}
+{% endmacro %}

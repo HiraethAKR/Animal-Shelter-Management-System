@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Animal Shelter{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body>
+    <header class="site-header">
+        <h1><a href="{{ url_for('public.animal_list') }}">Animal Shelter</a></h1>
+        <nav>
+            {% if session.staff_id %}
+                <a href="{{ url_for('staff.dashboard') }}">{{ session.staff_name }}</a>
+                <a href="{{ url_for('staff.change_password') }}">Settings</a>
+                <a href="{{ url_for('staff.logout') }}">Log out</a>
+            {% else %}
+                <a href="{{ url_for('public.adopt') }}">Adopt</a>
+                <a href="{{ url_for('public.foster') }}">Foster</a>
+                <a href="{{ url_for('public.rescue') }}">Report Rescue</a>
+                <a href="{{ url_for('staff.login') }}">Staff</a>
+            {% endif %}
+            <a href="{{ url_for('public.donate') }}">Donate</a>
+        </nav>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="flash-msg {{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Auto-inject CSRF token into all POST forms
+        (function() {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (token) {
+                document.querySelectorAll('form[method="POST"]').forEach(function(form) {
+                    if (!form.querySelector('input[name="csrf_token"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'csrf_token';
+                        input.value = token;
+                        form.appendChild(input);
+                    }
+                });
+            }
+        })();
+
+        setTimeout(function() {
+            document.querySelectorAll('.flash-msg').forEach(function(el) {
+                el.classList.add('fade');
+                setTimeout(function() { el.style.display = 'none'; }, 500);
+            });
+        }, 3000);
+    </script>
+</body>
+</html>

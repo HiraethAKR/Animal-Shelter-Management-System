@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Applications</h1>
+
+    <form method="GET" action="{{ url_for('staff.applications') }}" style="margin-bottom: 15px;">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by applicant name..." style="width: 250px;">
+        <select name="status">
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+        </select>
+        <button type="submit">Filter</button>
+        <a href="{{ url_for('staff.applications') }}">Clear</a>
+    </form>
+
+    <h2>Rescue Reports</h2>
+    {% if rescues %}
+        <table>
+            <tr><th>ID</th><th>Reporter</th><th>Contact</th><th>Animal</th><th>Location</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+            {% for r in rescues %}
+            <tr>
+                <td>{{ r.rescue_id }}</td>
+                <td>{{ r.first_name }} {{ r.last_name }}</td>
+                <td>{% for c in r.contacts %}{{ c.contact_type }}: {{ c.contact_value }}<br>{% endfor %}</td>
+                <td>
+                    {% if r.photo_url %}
+                    <img src="{{ url_for('static', filename=r.photo_url) }}" style="max-width: 60px; max-height: 60px; border-radius: 4px; display: block; margin-bottom: 4px;">
+                    {% endif %}
+                    {{ r.animal_species }}
+                </td>
+                <td>{{ r.location }}</td>
+                <td>{{ r.submitted_at }}</td>
+                <td><span class="status {{ r.status }}">{{ r.status }}</span></td>
+                <td style="white-space: nowrap;">
+                    {% if r.status == 'pending' %}
+                        {% if not r.animal_id %}
+                            {% if session.staff_role == 'admin' %}
+                            <a href="{{ url_for('staff.verify_rescue_create_animal', rescue_id=r.rescue_id) }}" class="btn" style="margin-bottom: 4px;">Verify & Create Animal</a><br>
+                            {% endif %}
+                            <a href="{{ url_for('staff.link_rescue_animal', rescue_id=r.rescue_id) }}" class="btn" style="margin-bottom: 4px;">Link Existing Animal</a><br>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('staff.verify_rescue', rescue_id=r.rescue_id) }}" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Approve this rescue report?');" aria-label="Verify rescue {{ r.rescue_id }}">Verify</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('staff.reject_rescue', rescue_id=r.rescue_id) }}" style="display:inline;">
+                            <button type="submit" class="danger" onclick="return confirm('Reject this rescue report?');" aria-label="Reject rescue {{ r.rescue_id }}">Reject</button>
+                        </form>
+                    {% else %}
+                        {% if session.staff_role == 'admin' %}
+                        <form method="POST" action="{{ url_for('staff.delete_rescue', rescue_id=r.rescue_id) }}" style="display:inline;" onsubmit="return confirm('Permanently delete this record?');">
+                            <button type="submit" class="danger" style="padding: 4px 10px; font-size: 0.8rem;" aria-label="Delete rescue {{ r.rescue_id }}">Delete</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}<p>No rescue reports found.</p>{% endif %}
+
+    <h2>Adoption Applications</h2>
+    {% if adoptions %}
+        <table>
+            <tr><th>ID</th><th>Applicant</th><th>Contact</th><th>Animal</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+            {% for a in adoptions %}
+            <tr>
+                <td>{{ a.adoption_id }}</td>
+                <td>{{ a.first_name }} {{ a.last_name }}</td>
+                <td>{% for c in a.contacts %}{{ c.contact_type }}: {{ c.contact_value }}<br>{% endfor %}</td>
+                <td>{{ a.animal_name }} — {{ a.species }}{% if a.breed %} ({{ a.breed }}){% endif %}</td>
+                <td>{{ a.submitted_at }}</td>
+                <td><span class="status {{ a.status }}">{{ a.status }}</span></td>
+                <td style="white-space: nowrap;">
+                    {% if a.status == 'pending' %}
+                        <form method="POST" action="{{ url_for('staff.verify_adoption', adoption_id=a.adoption_id) }}" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Approve this adoption application?');" aria-label="Verify adoption {{ a.adoption_id }}">Verify</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('staff.reject_adoption', adoption_id=a.adoption_id) }}" style="display:inline;">
+                            <button type="submit" class="danger" onclick="return confirm('Reject this adoption application?');" aria-label="Reject adoption {{ a.adoption_id }}">Reject</button>
+                        </form>
+                    {% else %}
+                        {% if session.staff_role == 'admin' %}
+                        <form method="POST" action="{{ url_for('staff.delete_adoption', adoption_id=a.adoption_id) }}" style="display:inline;" onsubmit="return confirm('Permanently delete this record?');">
+                            <button type="submit" class="danger" style="padding: 4px 10px; font-size: 0.8rem;" aria-label="Delete adoption {{ a.adoption_id }}">Delete</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}<p>No adoption applications found.</p>{% endif %}
+
+    <h2>Foster Applications</h2>
+    {% if fosters %}
+        <table>
+            <tr><th>ID</th><th>Applicant</th><th>Contact</th><th>Animal</th><th>Start</th><th>End</th><th>Notes</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+            {% for f in fosters %}
+            <tr>
+                <td>{{ f.foster_id }}</td>
+                <td>{{ f.first_name }} {{ f.last_name }}</td>
+                <td>{% for c in f.contacts %}{{ c.contact_type }}: {{ c.contact_value }}<br>{% endfor %}</td>
+                <td>{{ f.animal_name }} — {{ f.species }}{% if f.breed %} ({{ f.breed }}){% endif %}</td>
+                <td>{{ f.start_date }}</td>
+                <td>{{ f.end_date or "Ongoing" }}</td>
+                <td>{{ f.notes or "-" }}</td>
+                <td>{{ f.submitted_at }}</td>
+                <td><span class="status {{ f.status }}">{{ f.status }}</span></td>
+                <td style="white-space: nowrap;">
+                    {% if f.status == 'pending' %}
+                        <form method="POST" action="{{ url_for('staff.verify_foster', foster_id=f.foster_id) }}" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Approve this foster application?');" aria-label="Verify foster {{ f.foster_id }}">Verify</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('staff.reject_foster', foster_id=f.foster_id) }}" style="display:inline;">
+                            <button type="submit" class="danger" onclick="return confirm('Reject this foster application?');" aria-label="Reject foster {{ f.foster_id }}">Reject</button>
+                        </form>
+                    {% else %}
+                        {% if session.staff_role == 'admin' %}
+                        <form method="POST" action="{{ url_for('staff.delete_foster', foster_id=f.foster_id) }}" style="display:inline;" onsubmit="return confirm('Permanently delete this record?');">
+                            <button type="submit" class="danger" style="padding: 4px 10px; font-size: 0.8rem;" aria-label="Delete foster {{ f.foster_id }}">Delete</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}<p>No foster applications found.</p>{% endif %}
+
+    {{ render_pagination('staff.applications', page, pages, request.args) }}
+
+    <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>
+{% endblock %}

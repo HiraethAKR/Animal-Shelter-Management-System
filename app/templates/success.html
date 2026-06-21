@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="text-align: center;">
+    <h1>{{ title }}</h1>
+    <p class="muted">{{ msg }}</p>
+    
+    <div style="margin: 24px 0; padding: 20px; background: #f0f7ff; border-radius: 8px; text-align: left; border: 1px solid #cce5ff;">
+        <h3>What happens next?</h3>
+        <ul style="line-height: 1.8; padding-left: 20px;">
+            <li>Our team will review your submission within 1–2 business days.</li>
+            <li>We will contact you using the phone number or email address you provided.</li>
+            <li>If you do not hear from us within 3 business days, please call us or visit the shelter in person.</li>
+            <li>Visiting hours: Monday–Saturday, 9:00 AM – 5:00 PM.</li>
+        </ul>
+        <p style="margin-top: 12px;"><strong>Shelter Address:</strong> 123 Compassion Way, Animal City, AC 12345</p>
+    </div>
+    
+    <p><a href="{{ url_for('public.animal_list') }}" class="btn">Back to Animals</a></p>
+</div>
+{% endblock %}

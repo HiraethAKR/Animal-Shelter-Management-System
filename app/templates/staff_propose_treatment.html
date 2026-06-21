@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Add Treatment{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>Add Treatment</h1>
+        {% if session.staff_role != 'admin' %}
+        <p class="muted" style="text-align: center;">This will be submitted to an admin for approval.</p>
+        {% endif %}
+
+        <form method="POST">
+            <p>
+                <label>Vet:
+                    <select name="vet_id" required>
+                        <option value="">-- Choose --</option>
+                        {% for v in vets %}
+                        <option value="{{ v.vet_id }}">{{ v.first_name }} {{ v.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Type:
+                    <select name="treatment_type" required>
+                        <option value="Vaccination">Vaccination</option>
+                        <option value="Surgery">Surgery</option>
+                        <option value="Checkup">Checkup</option>
+                        <option value="Dental">Dental</option>
+                        <option value="Deworming">Deworming</option>
+                        <option value="Grooming">Grooming</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Medication: <input type="text" name="medication"></label>
+            </p>
+            <p>
+                <label>Description:<br><textarea name="description" rows="3" cols="40"></textarea></label>
+            </p>
+            <p>
+                <label>Cost: <input type="number" step="0.01" name="cost" value="0.00"></label>
+            </p>
+            <p>
+                <button type="submit">Submit</button>
+            </p>
+        </form>
+
+        <p class="center-link"><a href="{{ url_for('staff.medical_record_treatments', record_id=record_id) }}">Back</a></p>
+    </div>
+{% endblock %}

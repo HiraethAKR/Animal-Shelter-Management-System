@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Propose Edit: {{ animal.name }}{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>{{ 'Edit' if session.staff_role == 'admin' else 'Propose Edit' }}: {{ animal.name }}</h1>
+    <p class="muted" style="text-align: center;">Only fill in fields you want to change. Leave blank to keep current value.</p>
+
+    {% if animal.image_url %}
+    <p style="text-align: center;">Current photo:<br><img src="{{ url_for('static', filename=animal.image_url) }}" style="max-width: 200px; border-radius: 6px; margin-bottom: 10px;"></p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('public.animal_edit_request', animal_id=animal.animal_id) }}" enctype="multipart/form-data">
+        <p>
+            <label>Name: <input type="text" name="name" placeholder="{{ animal.name }}"></label>
+        </p>
+        <p>
+            <label>Species:
+                <select name="species">
+                    <option value="">-- Keep: {{ animal.species }} --</option>
+                    <option value="Dog">Dog</option>
+                    <option value="Cat">Cat</option>
+                    <option value="Bird">Bird</option>
+                    <option value="Rabbit">Rabbit</option>
+                    <option value="Other">Other</option>
+                </select>
+            </label>
+        </p>
+        <p>
+            <label>Breed: <input type="text" name="breed" placeholder="{{ animal.breed or 'Unknown' }}"></label>
+        </p>
+        <p>
+            <label>Sex:
+                <select name="sex">
+                    <option value="">-- Keep: {{ animal.sex }} --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </label>
+        </p>
+        <p>
+            <label>Birth Date: <input type="date" name="birth_date"></label>
+        </p>
+        <p>
+            <label>Status:
+                <select name="status">
+                    <option value="">-- Keep: {{ animal.status }} --</option>
+                    <option value="available">Available</option>
+                    <option value="pending">Pending</option>
+                    <option value="adopted">Adopted</option>
+                    <option value="fostered">Fostered</option>
+                    <option value="unavailable">Unavailable</option>
+                </select>
+            </label>
+        </p>
+        <p>
+            <label>Replace Photo: <input type="file" name="image" accept="image/*" onchange="previewImage(this, 'imagePreview')"></label>
+            <img id="imagePreview" style="display: none; max-width: 200px; border-radius: 6px; margin-top: 8px; border: 1px solid #ccd6e0;">
+        </p>
+        <p>
+            <label>Notes:<br>
+                <textarea name="notes" rows="4" cols="40" placeholder="{{ animal.notes or 'None' }}"></textarea>
+            </label>
+        </p>
+        <p>
+            <button type="submit">Submit {{ 'Edit' if session.staff_role == 'admin' else 'Edit Request' }}</button>
+        </p>
+    </form>
+
+    <p class="center-link"><a href="{{ url_for('public.animal_detail', animal_id=animal.animal_id) }}">Cancel</a></p>
+
+    <script>
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    </script>
+</div>
+{% endblock %}

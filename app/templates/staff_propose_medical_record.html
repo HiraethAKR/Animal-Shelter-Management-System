@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Add Medical Record{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>Add Medical Record</h1>
+        {% if session.staff_role != 'admin' %}
+        <p class="muted" style="text-align: center;">This will be submitted to an admin for approval.</p>
+        {% endif %}
+
+        <form method="POST">
+            <p>
+                <label>Animal:
+                    <select name="animal_id" required>
+                        <option value="">-- Choose --</option>
+                        {% for a in animals %}
+                        <option value="{{ a.animal_id }}" {% if preselected_animal_id == a.animal_id %}selected{% endif %}>{{ a.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </p>
+            <p>
+                <label>Visit Date: <input type="date" name="visit_date" required></label>
+            </p>
+            <p>
+                <label>Outcome: <input type="text" name="outcome"></label>
+            </p>
+            <p>
+                <button type="submit">Submit</button>
+            </p>
+        </form>
+
+        <p class="center-link"><a href="{{ url_for('staff.medical_record_list') }}">Back to list</a></p>
+    </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Add Vet{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <div class="form-card">
+        <h1>Add Veterinarian</h1>
+        {% if session.staff_role != 'admin' %}
+        <p class="muted" style="text-align: center;">This will be submitted to an admin for approval.</p>
+        {% endif %}
+
+        <form method="POST">
+            <p>
+                <label>First Name: <input type="text" name="first_name" required></label>
+            </p>
+            <p>
+                <label>Last Name: <input type="text" name="last_name" required></label>
+            </p>
+            <p>
+                <label>Affiliation: <input type="text" name="affiliation"></label>
+            </p>
+
+            <h3>Contacts</h3>
+            <div id="contacts-container">
+                <div class="contact-row" style="margin-bottom: 5px;">
+                    <select name="contact_type[]">
+                        <option value="phone">Phone</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <input type="text" name="contact_value[]" placeholder="Contact value">
+                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                </div>
+            </div>
+            <p>
+                <button type="button" onclick="addContact()">+ Add Contact</button>
+            </p>
+
+            <p>
+                <button type="submit">Add Vet</button>
+            </p>
+        </form>
+
+        <p class="center-link"><a href="{{ url_for('staff.vet_list') }}">Back to list</a></p>
+    </div>
+
+    <script>
+    function addContact() {
+        const container = document.getElementById('contacts-container');
+        const row = document.createElement('div');
+        row.className = 'contact-row';
+        row.style.marginBottom = '5px';
+        row.innerHTML = `
+            <select name="contact_type[]">
+                <option value="phone">Phone</option>
+                <option value="email">Email</option>
+            </select>
+            <input type="text" name="contact_value[]" placeholder="Contact value">
+            <button type="button" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        container.appendChild(row);
+    }
+    </script>
+{% endblock %}

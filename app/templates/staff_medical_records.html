@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "macros.html" import render_pagination %}
+
+{% block title %}Medical Records{% endblock %}
+
+{% block content %}
+    {% include "staff_nav.html" %}
+    <h1>Medical Records</h1>
+
+    <p class="mb-2">
+        <a href="{{ url_for('staff.propose_medical_record') }}" class="btn">+ Add Medical Record</a>
+    </p>
+
+    <form method="GET" action="{{ url_for('staff.medical_record_list') }}" class="filter-bar">
+        <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by animal name...">
+        <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}" placeholder="From">
+        <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}" placeholder="To">
+        <input type="text" name="outcome" value="{{ request.args.get('outcome', '') }}" placeholder="Outcome..." style="max-width: 120px;">
+        <select name="sort" onchange="this.form.submit()">
+            <option value="date_desc" {% if request.args.get('sort', 'date_desc') == 'date_desc' %}selected{% endif %}>Newest First</option>
+            <option value="date_asc" {% if request.args.get('sort') == 'date_asc' %}selected{% endif %}>Oldest First</option>
+            <option value="animal" {% if request.args.get('sort') == 'animal' %}selected{% endif %}>Animal Name</option>
+        </select>
+        <button type="submit">Search</button>
+        <a href="{{ url_for('staff.medical_record_list') }}" class="btn secondary">Clear</a>
+    </form>
+
+    {% if records %}
+        <table>
+            <tr><th>ID</th><th>Animal</th><th>Visit Date</th><th>Outcome</th><th>Actions</th></tr>
+            {% for r in records %}
+            <tr>
+                <td>{{ r.record_id }}</td>
+                <td>{{ r.animal_name }}</td>
+                <td>{{ r.visit_date }}</td>
+                <td>{{ r.outcome or "-" }}</td>
+                <td>
+                    <a href="{{ url_for('staff.medical_record_treatments', record_id=r.record_id) }}">View</a>
+                    <span style="color: #ccc; margin: 0 4px;">|</span>
+                    <a href="{{ url_for('staff.medical_record_edit', record_id=r.record_id) }}">Edit</a>
+                    {% if session.staff_role == 'admin' %}
+                    <span style="color: #ccc; margin: 0 4px;">|</span>
+                    <form method="POST" action="{{ url_for('staff.delete_medical_record', record_id=r.record_id) }}" style="display:inline;" onsubmit="return confirm('Delete this record and all treatments?');">
+                        <button type="submit" class="danger" style="padding: 4px 10px; font-size: 0.8rem;">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {{ render_pagination('staff.medical_record_list', page, pages, request.args) }}
+    {% else %}
+        <p class="muted">No medical records found.</p>
+    {% endif %}
+
+    <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>
+{% endblock %}
