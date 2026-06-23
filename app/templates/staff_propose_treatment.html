@@ -34,6 +34,14 @@
                     </select>
                 </label>
             </p>
+
+            <p id="treatmentOtherWrapper" class="hidden">
+                <label>Please specify type:
+                    <input type="text" name="treatment_type_other" id="treatmentOther"
+                        placeholder="e.g. X-ray, Blood test...">
+                </label>
+            </p>
+
             <p>
                 <label>Medication: <input type="text" name="medication"></label>
             </p>
@@ -50,4 +58,20 @@
 
         <p class="center-link"><a href="{{ url_for('staff.medical_record_treatments', record_id=record_id) }}">Back</a></p>
     </div>
+
+    <script>
+        function handleTreatmentChange() {
+            const select = document.getElementById('treatmentSelect');
+            const wrapper = document.getElementById('treatmentOtherWrapper');
+            const otherInput = document.getElementById('treatmentOther');
+
+            if (select.value === 'Other') {
+                wrapper.classList.remove('hidden');
+                otherInput.focus();
+            } else {
+                wrapper.classList.add('hidden');
+                otherInput.value = '';
+            }
+        }
+    </script>
 {% endblock %}

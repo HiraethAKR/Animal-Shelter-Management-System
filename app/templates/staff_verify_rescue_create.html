@@ -35,6 +35,14 @@
                     </select>
                 </label>
             </p>
+
+            <p id="speciesOtherWrapper" class="{% if rescue.animal_species == 'Other' %}{% else %}hidden{% endif %}">
+                <label>Please specify species:
+                    <input type="text" name="species_other" id="speciesOther"
+                        placeholder="e.g. Hamster, Snake...">
+                </label>
+            </p>
+
             <p>
                 <label>Breed: <input type="text" name="breed"></label>
             </p>
@@ -76,6 +84,20 @@
                 preview.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function handleSpeciesChange() {
+        const select = document.getElementById('speciesSelect');
+        const wrapper = document.getElementById('speciesOtherWrapper');
+        const otherInput = document.getElementById('speciesOther');
+
+        if (select.value === 'Other') {
+            wrapper.classList.remove('hidden');
+            otherInput.focus();
+        } else {
+            wrapper.classList.add('hidden');
+            otherInput.value = '';
         }
     }
     </script>

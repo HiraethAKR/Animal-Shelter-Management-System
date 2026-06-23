@@ -62,6 +62,14 @@
             </label>
         </p>
 
+         <p id="speciesOtherWrapper" class="{% if form_data.species != 'Other' %}hidden{% endif %}">
+            <label>Please specify species:
+                <input type="text" name="species_other" id="speciesOther"
+                    placeholder="e.g. Hamster, Snake..."
+                    value="{{ form_data.species_other or '' }}">
+            </label>
+        </p>       
+
         <h3>Rescue Details</h3>
         <p>
             <label>Location Found: <span style="color: #c33;">*</span>
@@ -76,6 +84,23 @@
         <p>
             <button type="submit">Submit Report</button>
         </p>
+
+        <script>
+            function handleSpeciesChange() {
+                const select = document.getElementById('speciesSelect');
+                const wrapper = document.getElementById('speciesOtherWrapper');
+                const otherInput = document.getElementById('speciesOther');
+
+                if (select.value === 'Other') {
+                    wrapper.classList.remove('hidden');
+                    otherInput.focus();
+                } else {
+                    wrapper.classList.add('hidden');
+                    otherInput.value = '';
+                }
+            }
+        </script>
+
     </form>
 
     <p class="center-link"><a href="{{ url_for('public.animal_list') }}">Back to animal list</a></p>
