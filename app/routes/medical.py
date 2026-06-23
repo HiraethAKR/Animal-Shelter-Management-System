@@ -463,6 +463,12 @@ def propose_treatment(record_id):
     if request.method == "POST":
         vet_id = request.form.get("vet_id")
         treatment_type = request.form.get("treatment_type")
+
+        if treatment_type == "Other":
+            treatment_type_other = request.form.get("treatment_type_other", "").strip()
+            if treatment_type_other:
+                treatment_type = treatment_type_other
+
         medication = request.form.get("medication", "").strip()
         description = request.form.get("description", "").strip()
         cost = request.form.get("cost", "0")
@@ -597,6 +603,12 @@ def edit_treatment(treatment_id):
     if request.method == "POST":
         vet_id = request.form.get("vet_id")
         treatment_type = request.form.get("treatment_type")
+
+        if treatment_type == "Other":
+            treatment_type_other = request.form.get("treatment_type_other", "").strip()
+            if treatment_type_other:
+                treatment_type = treatment_type_other
+
         medication = request.form.get("medication", "").strip()
         description = request.form.get("description", "").strip()
         cost = request.form.get("cost", "0")

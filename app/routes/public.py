@@ -220,12 +220,18 @@ def animal_create():
         form_data = {
             "name": request.form.get("name", ""),
             "species": request.form.get("species", ""),
+            "species_other": request.form.get("species_other", ""),
             "breed": request.form.get("breed", ""),
             "sex": request.form.get("sex", ""),
             "birth_date": request.form.get("birth_date", ""),
             "status": request.form.get("status", ""),
             "notes": request.form.get("notes", ""),
         }
+
+        if form_data["species"] == "Other":
+            species_other = form_data["species_other"].strip()
+            if species_other:
+                form_data["species"] = species_other
 
         if form_data["birth_date"]:
             try:
@@ -349,6 +355,11 @@ def animal_edit_request(animal_id):
             if value and value != str(animal[field] or ""):
                 field_changes[field] = value
 
+        if field_changes.get("species") == "Other":
+            species_other = request.form.get("species_other", "").strip()
+            if species_other:
+                field_changes["species"] = species_other
+
         try:
             image_url = _save_animal_image(request.files.get("image"))
         except ValueError as e:
@@ -409,6 +420,11 @@ def rescue():
             "animal_species": request.form.get("animal_species", ""),
             "contacts": [{"contact_type": ct, "contact_value": cv.strip()} for ct, cv in zip(contact_types, contact_values) if cv.strip()],
         }
+
+        if form_data["animal_species"] == "Other":
+            species_other = request.form.get("species_other", "").strip()
+            if species_other:
+                form_data["animal_species"] = species_other
 
         if not form_data["first_name"] or not form_data["last_name"]:
             flash("Name is required.", "error")

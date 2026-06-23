@@ -23,7 +23,8 @@
             </p>
             <p>
                 <label>Type:
-                    <select name="treatment_type" required>
+                    <select name="treatment_type" id="treatmentSelect" onchange="handleTreatmentChange()" required>
+                        <option value="">-- Select Treatment Type --</option>
                         <option value="Vaccination">Vaccination</option>
                         <option value="Surgery">Surgery</option>
                         <option value="Checkup">Checkup</option>
@@ -35,13 +36,13 @@
                 </label>
             </p>
 
-            <p id="treatmentOtherWrapper" class="hidden">
+            <p id="treatmentOtherWrapper" class="hidden" style="display: none;">
                 <label>Please specify type:
                     <input type="text" name="treatment_type_other" id="treatmentOther"
                         placeholder="e.g. X-ray, Blood test...">
                 </label>
             </p>
-
+            
             <p>
                 <label>Medication: <input type="text" name="medication"></label>
             </p>
@@ -67,9 +68,13 @@
 
             if (select.value === 'Other') {
                 wrapper.classList.remove('hidden');
+                wrapper.style.display = 'block';
+                otherInput.required = true;
                 otherInput.focus();
             } else {
                 wrapper.classList.add('hidden');
+                wrapper.style.display = 'none';
+                otherInput.required = false;
                 otherInput.value = '';
             }
         }

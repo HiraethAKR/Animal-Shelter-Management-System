@@ -38,7 +38,8 @@
             </p>
             <p>
                 <label>Species:
-                    <select name="species" required>
+                    <select name="species" id="speciesSelect" onchange="handleSpeciesChange()" required>
+                        <option value="">-- Keep: {{ animal.species }} --</option>
                         <option value="Dog">Dog</option>
                         <option value="Cat">Cat</option>
                         <option value="Bird">Bird</option>
@@ -48,12 +49,13 @@
                 </label>
             </p>
 
-            <p id="speciesOtherWrapper" class="hidden">
+            <p id="speciesOtherWrapper" class="hidden" style="display: none;">
                 <label>Please specify species:
                     <input type="text" name="species_other" id="speciesOther"
                         placeholder="e.g. Hamster, Snake...">
                 </label>
             </p>
+
             <p>
                 <label>Breed: <input type="text" name="breed"></label>
             </p>
@@ -85,9 +87,29 @@
 
             if (select.value === 'Other') {
                 wrapper.classList.remove('hidden');
+                wrapper.style.display = 'block';
                 otherInput.focus();
             } else {
                 wrapper.classList.add('hidden');
+                wrapper.style.display = 'none';
+                otherInput.value = '';
+            }
+        }
+
+        function handleSpeciesChange() {
+            const select = document.getElementById('speciesSelect');
+            const wrapper = document.getElementById('speciesOtherWrapper');
+            const otherInput = document.getElementById('speciesOther');
+
+            if (select.value === 'Other') {
+                wrapper.classList.remove('hidden');
+                wrapper.style.display = 'block';
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                wrapper.classList.add('hidden');
+                wrapper.style.display = 'none';
+                otherInput.required = false;
                 otherInput.value = '';
             }
         }
