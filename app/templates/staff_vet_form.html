@@ -11,27 +11,41 @@
         {% endif %}
 
         <form method="POST">
-            <p>
-                <label>First Name: <input type="text" name="first_name" required></label>
-            </p>
-            <p>
-                <label>Last Name: <input type="text" name="last_name" required></label>
-            </p>
-            <p>
-                <label>Affiliation: <input type="text" name="affiliation"></label>
-            </p>
+            <label>First Name: 
+                <input type="text" name="first_name" value="{{ form_data.first_name if form_data else '' }}" required>
+            </label>
+            <label>Last Name: 
+                <input type="text" name="last_name" value="{{ form_data.last_name if form_data else '' }}" required>
+            </label>
+            <label>Affiliation: 
+                <input type="text" name="affiliation" value="{{ form_data.affiliation if form_data else '' }}">
+            </label>
 
             <h3>Contacts</h3>
             <div id="contacts-container">
-                <div class="contact-row" style="margin-bottom: 5px;">
-                    <select name="contact_type[]">
-                        <option value="phone">Phone</option>
-                        <option value="email">Email</option>
-                    </select>
-                    <input type="text" name="contact_value[]" placeholder="Contact value">
-                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
-                </div>
+                {% if contacts %}
+                    {% for ct, cv in contacts %}
+                    <div class="contact-row" style="margin-bottom: 5px;">
+                        <select name="contact_type[]">
+                            <option value="phone" {% if ct == 'phone' %}selected{% endif %}>Phone</option>
+                            <option value="email" {% if ct == 'email' %}selected{% endif %}>Email</option>
+                        </select>
+                        <input type="text" name="contact_value[]" value="{{ cv }}" placeholder="Contact value">
+                        <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="contact-row" style="margin-bottom: 5px;">
+                        <select name="contact_type[]">
+                            <option value="phone">Phone</option>
+                            <option value="email">Email</option>
+                        </select>
+                        <input type="text" name="contact_value[]" placeholder="Contact value">
+                        <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                {% endif %}
             </div>
+            
             <p>
                 <button type="button" onclick="addContact()">+ Add Contact</button>
             </p>
