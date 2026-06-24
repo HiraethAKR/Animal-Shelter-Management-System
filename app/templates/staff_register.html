@@ -29,13 +29,62 @@
             <p>
                 <label>Last Name: <input type="text" name="last_name" required></label>
             </p>
+
             <p>
-                <label>Password: <input type="password" name="password" required></label>
+                <label>Password:
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="password" name="password" id="password" required style="flex: 1; max-width: none;">
+                        <button type="button" onclick="togglePassword('password', 'eyeIcon1')" style="background: none; border: 1px solid #ccd6e0; color: #555; padding: 8px 10px;">
+                            <span id="eyeIcon1">👁</span>
+                        </button>
+                    </div>
+                </label>
             </p>
+            <p>
+                <label>Confirm Password:
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="password" name="confirm_password" id="confirm_password" required style="flex: 1; max-width: none;">
+                        <button type="button" onclick="togglePassword('confirm_password', 'eyeIcon2')" style="background: none; border: 1px solid #ccd6e0; color: #555; padding: 8px 10px;">
+                            <span id="eyeIcon2">👁</span>
+                        </button>
+                    </div>
+                </label>
+            </p>
+            <p id="passwordError" style="color: #c33; display: none; font-size: 0.85rem;">
+                Passwords do not match.
+            </p>
+
             <p>
                 <button type="submit">Register</button>
             </p>
         </form>
+
+        <script>
+            function togglePassword(inputId, iconId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(iconId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    icon.textContent = '👁';
+                }
+            }
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirm_password').value;
+                const errorMsg = document.getElementById('passwordError');
+
+                if (password !== confirm) {
+                    e.preventDefault();
+                    errorMsg.style.display = 'block';
+                } else {
+                    errorMsg.style.display = 'none';
+                }
+            });
+        </script>
 
         <p>Already have an account? <a href="{{ url_for('staff.login') }}">Log in</a></p>
         <p><a href="{{ url_for('public.animal_list') }}">Back to public site</a></p>

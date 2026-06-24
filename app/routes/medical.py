@@ -3,6 +3,7 @@ from datetime import date
 from flask import render_template, request, redirect, url_for, flash, session
 from app.db import get_db
 from app.routes.staff import staff_bp, login_required, admin_required
+from app.routes.public import _validate_contacts
 from app.services.edit_apply import apply_vet_edit, apply_medical_record_edit, apply_treatment_edit
 
 
@@ -82,13 +83,25 @@ def vet_new():
 
         if not first_name or not last_name:
             flash("First and last name are required.", "error")
-            return render_template("staff_vet_form.html")
+            return render_template("staff_vet_form.html",
+                form_data={"first_name": first_name, "last_name": last_name, "affiliation": affiliation},
+                contacts=list(zip(contact_types, contact_values))
+                )
 
         contacts = []
         for ct, cv in zip(contact_types, contact_values):
             cv = cv.strip()
             if ct and cv:
                 contacts.append({"contact_type": ct, "contact_value": cv})
+
+        validation_errors = _validate_contacts(contact_types, contact_values)
+        if validation_errors:
+            for err in validation_errors:
+                flash(err, "error")
+            return render_template("staff_vet_form.html", 
+            form_data={"first_name": first_name, "last_name": last_name, "affiliation": affiliation},
+            contacts=list(zip(contact_types, contact_values))
+            )
 
         field_changes = {
             "first_name": first_name,
@@ -162,6 +175,18 @@ def vet_edit_request(vet_id):
 
         contact_types = request.form.getlist("contact_type[]")
         contact_values = request.form.getlist("contact_value[]")
+
+        validation_errors = _validate_contacts(contact_types, contact_values)
+        if validation_errors:
+            for err in validation_errors:
+                flash(err, "error")
+            vet["first_name"] = new_first or vet["first_name"]
+            vet["last_name"] = new_last or vet["last_name"]
+            vet["affiliation"] = new_affil or vet["affiliation"]
+            vet["contacts"] = [{"contact_type": ct, "contact_value": cv} 
+                            for ct, cv in zip(contact_types, contact_values)]
+            return render_template("staff_vet_edit_form.html", vet=vet)
+
         new_contacts = []
         for ct, cv in zip(contact_types, contact_values):
             cv = cv.strip()

@@ -79,6 +79,11 @@ def register():
             return render_template("staff_register.html")
 
         password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        if password != confirm_password:
+            flash("Passwords do not match.", "error")
+            return render_template("staff_register.html")
 
         if not username:
             flash("Username is required.", "error")
