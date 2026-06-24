@@ -16,12 +16,22 @@
     <h2>Find an Animal</h2>
     <form method="GET" action="{{ url_for('public.animal_list') }}" class="filter-bar">
         <input type="text" name="q" value="{{ request.args.get('q', '') }}" placeholder="Search by name or breed...">
-        <select name="species">
+        <select name="species" id="speciesSelect" onchange="handleSpeciesChange()">
             <option value="">All Species</option>
             {% for val in ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'] %}
             <option value="{{ val }}" {% if request.args.get('species') == val %}selected{% endif %}>{{ val }}</option>
             {% endfor %}
         </select>
+
+         <input 
+            type="text" 
+            name="species_other" 
+            id="speciesOther"
+            placeholder="Please specify species..."
+            value="{{ request.args.get('species_other', '') }}"
+            class="{% if request.args.get('species') != 'Other' %}hidden{% endif %}"
+        >
+
         <select name="status">
             <option value="">All Statuses</option>
             {% for val in ['available', 'pending', 'adopted', 'fostered', 'unavailable'] %}
@@ -40,6 +50,25 @@
         <button type="submit">Search</button>
         <a href="{{ url_for('public.animal_list') }}" class="btn secondary">Clear</a>
     </form>
+
+    <script>
+        function handleSpeciesChange() {
+            const select = document.getElementById('speciesSelect');
+            const otherInput = document.getElementById('speciesOther');
+
+            if (select.value === 'Other') {
+                otherInput.classList.remove('hidden');
+                otherInput.style.display = 'inline-block';
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                otherInput.classList.add('hidden');
+                otherInput.style.display = 'none';
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+    </script>
 
     <p class="muted small">{{ total }} animal(s) found</p>
 

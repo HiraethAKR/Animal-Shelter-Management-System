@@ -17,7 +17,7 @@
         </p>
         <p>
             <label>Species:
-                <select name="species">
+                <select name="species" id="speciesSelect" onchange="handleSpeciesChange()" required>
                     <option value="">-- Keep: {{ animal.species }} --</option>
                     <option value="Dog">Dog</option>
                     <option value="Cat">Cat</option>
@@ -27,6 +27,14 @@
                 </select>
             </label>
         </p>
+
+        <p id="speciesOtherWrapper" class="hidden" style="display: none;">
+            <label>Please specify species:
+                <input type="text" name="species_other" id="speciesOther"
+                    placeholder="e.g. Hamster, Snake...">
+            </label>
+        </p>
+
         <p>
             <label>Breed: <input type="text" name="breed" placeholder="{{ animal.breed or 'Unknown' }}"></label>
         </p>
@@ -80,6 +88,24 @@
                 preview.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function handleSpeciesChange() {
+        const select = document.getElementById('speciesSelect');
+        const wrapper = document.getElementById('speciesOtherWrapper');
+        const otherInput = document.getElementById('speciesOther');
+
+        if (select.value === 'Other') {
+            wrapper.classList.remove('hidden');
+            wrapper.style.display = 'block';
+            otherInput.required = true;
+            otherInput.focus();
+        } else {
+            wrapper.classList.add('hidden');
+            wrapper.style.display = 'none';
+            otherInput.required = false;
+            otherInput.value = '';
         }
     }
     </script>

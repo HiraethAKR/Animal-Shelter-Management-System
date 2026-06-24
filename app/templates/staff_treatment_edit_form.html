@@ -20,13 +20,24 @@
             </p>
             <p>
                 <label>Type:
-                    <select name="treatment_type" required>
+                    <select name="treatment_type" id="treatmentSelect" onchange="handleTreatmentChange()" required>
                         {% for val in ['Vaccination', 'Surgery', 'Checkup', 'Dental', 'Deworming', 'Grooming', 'Other'] %}
                         <option value="{{ val }}" {% if treatment.treatment_type == val %}selected{% endif %}>{{ val }}</option>
                         {% endfor %}
                     </select>
                 </label>
             </p>
+
+            <p id="treatmentOtherWrapper" 
+                class="{% if treatment.treatment_type != 'Other' %}hidden{% endif %}"
+                style="display: none;">
+                <label>Please specify type:
+                    <input type="text" name="treatment_type_other" id="treatmentOther"
+                        placeholder="e.g. X-ray, Blood test..."
+                        {% if treatment.treatment_type == 'Other' %}required{% endif %}>
+                </label>
+            </p>
+
             <p>
                 <label>Medication: <input type="text" name="medication" value="{{ treatment.medication or '' }}"></label>
             </p>
@@ -43,4 +54,24 @@
 
         <p class="center-link"><a href="{{ url_for('staff.medical_record_treatments', record_id=record_id) }}">Back</a></p>
     </div>
+
+    <script>
+        function handleTreatmentChange() {
+            const select = document.getElementById('treatmentSelect');
+            const wrapper = document.getElementById('treatmentOtherWrapper');
+            const otherInput = document.getElementById('treatmentOther');
+
+            if (select.value === 'Other') {
+                wrapper.classList.remove('hidden');
+                wrapper.style.display = 'block';
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                wrapper.classList.add('hidden');
+                wrapper.style.display = 'none';
+                otherInput.required = false;
+                otherInput.value = '';
+            }
+        }
+    </script>
 {% endblock %}

@@ -475,6 +475,7 @@ tr:last-child td {
 .small { font-size: 0.85rem; }
 .mb-1 { margin-bottom: 8px; }
 .mb-2 { margin-bottom: 16px; }
+.hidden { display: none; }
 
 /* =====================================================================
    Centered Form Card

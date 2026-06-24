@@ -53,7 +53,7 @@
         </p>
         <p>
             <label>Species: <span style="color: #c33;">*</span>
-                <select name="animal_species" required>
+                <select name="animal_species" id="speciesSelect" onchange="handleSpeciesChange()" required>
                     <option value="">-- Select --</option>
                     {% for val in ['Dog', 'Cat', 'Bird', 'Rabbit', 'Other'] %}
                     <option value="{{ val }}" {% if form_data.animal_species == val %}selected{% endif %}>{{ val }}</option>
@@ -61,6 +61,16 @@
                 </select>
             </label>
         </p>
+
+        <p id="speciesOtherWrapper" 
+                class="hidden"
+                style="display: none;">
+                <label>Please specify species:
+                    <input type="text" name="species_other" id="speciesOther"
+                        placeholder="e.g. Hamster, Snake..."
+                        value="{{ form_data.species_other or '' }}">
+                </label>
+        </p>     
 
         <h3>Rescue Details</h3>
         <p>
@@ -76,6 +86,27 @@
         <p>
             <button type="submit">Submit Report</button>
         </p>
+
+        <script>
+            function handleSpeciesChange() {
+                const select = document.getElementById('speciesSelect');
+                const wrapper = document.getElementById('speciesOtherWrapper');
+                const otherInput = document.getElementById('speciesOther');
+
+                if (select.value === 'Other') {
+                    wrapper.classList.remove('hidden');
+                    wrapper.style.display = 'block';
+                    otherInput.required = true;
+                    otherInput.focus();
+                } else {
+                    wrapper.classList.add('hidden');
+                    wrapper.style.display = 'none';
+                    otherInput.required = false;
+                    otherInput.value = '';
+                }
+            }
+        </script>
+
     </form>
 
     <p class="center-link"><a href="{{ url_for('public.animal_list') }}">Back to animal list</a></p>
