@@ -186,6 +186,10 @@ def animal_list():
 
     where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
 
+    if where_sql == "1=1":
+        where_sql = "is_deleted = 0"
+    else:
+        where_sql = where_sql + " AND is_deleted = 0"
     cursor.execute(f"SELECT COUNT(*) as total FROM Animal WHERE {where_sql}", params)
     total = cursor.fetchone()["total"]
     pages = (total + per_page - 1) // per_page
@@ -501,7 +505,7 @@ def adopt():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT animal_id, name, species, breed FROM Animal WHERE status = 'available' ORDER BY name"
+        "SELECT animal_id, name, species, breed FROM Animal WHERE status = 'available' AND is_deleted = 0 ORDER BY name"
     )
     available_animals = cursor.fetchall()
 
@@ -567,7 +571,7 @@ def foster():
     db = get_db()
     cursor = db.cursor()
     cursor.execute(
-        "SELECT animal_id, name, species, breed FROM Animal WHERE status = 'available' ORDER BY name"
+        "SELECT animal_id, name, species, breed FROM Animal WHERE status = 'available' AND is_deleted = 0 ORDER BY name"
     )
     available_animals = cursor.fetchall()
 
