@@ -163,9 +163,16 @@ def animal_list():
         params["q"] = f"%{q}%"
 
     species = request.args.get("species")
-    if species:
+    species_other = request.args.get("species_other", "").strip()
+
+    if species == "Other" and species_other:
+        where_clauses.append("species = %(species)s")
+        params["species"] = species_other
+    elif species and species != "Other":
         where_clauses.append("species = %(species)s")
         params["species"] = species
+    elif species == "Other" and not species_other:
+        where_clauses.append("species NOT IN ('Dog', 'Cat', 'Bird', 'Rabbit')")
 
     status = request.args.get("status")
     if status:
