@@ -259,28 +259,31 @@ def delete_animal(animal_id):
     db = get_db()
     cursor = db.cursor()
 
-    cursor.execute("SELECT COUNT(*) as count FROM Adoption WHERE animal_id = %(animal_id)s", {"animal_id": animal_id})
-    if cursor.fetchone()["count"] > 0:
-        flash("Cannot delete animal: referenced by existing adoption records.", "error")
-        return redirect(url_for("public.animal_list"))
-
-    cursor.execute("SELECT COUNT(*) as count FROM Foster WHERE animal_id = %(animal_id)s", {"animal_id": animal_id})
-    if cursor.fetchone()["count"] > 0:
-        flash("Cannot delete animal: referenced by existing foster records.", "error")
-        return redirect(url_for("public.animal_list"))
-
-    # Delete treatments first (via medical records)
+    # Check it exists and isn't already archived
     cursor.execute(
-        "DELETE t FROM Treatment t JOIN Medical_Record mr ON t.record_id = mr.record_id WHERE mr.animal_id = %(animal_id)s",
+        "SELECT name, is_deleted FROM Animal WHERE animal_id = %(animal_id)s",
         {"animal_id": animal_id},
     )
-    # Delete medical records
-    cursor.execute("DELETE FROM Medical_Record WHERE animal_id = %(animal_id)s", {"animal_id": animal_id})
-    # Set animal_id NULL on Rescue (schema allows NULL)
-    cursor.execute("UPDATE Rescue SET animal_id = NULL WHERE animal_id = %(animal_id)s", {"animal_id": animal_id})
-    # Delete animal
-    cursor.execute("DELETE FROM Animal WHERE animal_id = %(animal_id)s", {"animal_id": animal_id})
+    row = cursor.fetchone()
+    if not row:
+        flash("Animal not found.", "error")
+        return redirect(url_for("public.animal_list"))
+    if row["is_deleted"]:
+        flash("Animal is already archived.", "error")
+        return redirect(url_for("public.animal_list"))
+
+    # Soft-delete: mark as deleted, keep all records intact
+    cursor.execute(
+        """
+        UPDATE Animal
+        SET is_deleted = TRUE,
+            deleted_at = NOW(),
+            deleted_by = %(staff_id)s
+        WHERE animal_id = %(animal_id)s
+        """,
+        {"staff_id": session["staff_id"], "animal_id": animal_id},
+    )
     db.commit()
 
-    flash("Animal deleted.", "error")
+    flash(f"Animal \"{row['name']}\" has been archived. All adoption/foster/rescue records are preserved.", "success")
     return redirect(url_for("public.animal_list"))
