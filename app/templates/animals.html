@@ -4,6 +4,14 @@
 {% block title %}Animals{% endblock %}
 
 {% block content %}
+    {% if not session.staff_id %}
+    <div class="action-buttons">
+        <a href="{{ url_for('public.adopt') }}" class="btn btn-adopt">Adopt</a>
+        <a href="{{ url_for('public.foster') }}" class="btn btn-foster">Foster</a>
+        <a href="{{ url_for('public.rescue') }}" class="btn btn-rescue">Report Rescue</a>
+    </div>
+    {% endif %}
+
     {% if session.staff_id %}
     <p class="mb-2">
         <a href="{{ url_for('public.animal_create') }}" class="btn">+ Add Animal</a>
