@@ -5,21 +5,21 @@
 -- =====================================================================
 
 CREATE TABLE Animal (
-    animal_id INT NOT NULL AUTO_INCREMENT,
-	staff_id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
-    species VARCHAR(100) NOT NULL,
-    breed VARCHAR(50) DEFAULT NULL,
-    sex ENUM('Male','Female') NOT NULL,
-    birth_date DATE DEFAULT NULL,
-    status ENUM('available','pending','adopted','fostered','unavailable') NOT NULL,
-    notes TEXT DEFAULT NULL,
-    image_url VARCHAR(255) DEFAULT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    deleted_at DATETIME DEFAULT NULL,
-    deleted_by INT DEFAULT NULL,
+    animal_id 		INT 			NOT NULL AUTO_INCREMENT,
+    staff_id 		INT 			NOT NULL,
+    name 		VARCHAR(50) 		NOT NULL,
+    species 		VARCHAR(100) 		NOT NULL,
+    breed	 	VARCHAR(50)	 	DEFAULT NULL,
+    sex 		ENUM('Male','Female') 	NOT NULL,
+    birth_date 		DATE 			DEFAULT NULL,
+    status 		ENUM('available','pending','adopted','fostered','unavailable') NOT NULL,
+    notes 		TEXT 			DEFAULT NULL,
+    image_url 		VARCHAR(255)	 	DEFAULT NULL,
+    is_deleted		BOOLEAN 		NOT NULL DEFAULT FALSE,
+    deleted_at 		DATETIME 		DEFAULT NULL,
+    deleted_by 		INT 			DEFAULT NULL,
     PRIMARY KEY (animal_id),
-    FOREIGN KEY (staff_id) REFERENCES STAFF(staff_id)
+    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
 );
 
 CREATE TABLE Vet (
