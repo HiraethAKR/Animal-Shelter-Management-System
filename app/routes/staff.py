@@ -24,8 +24,10 @@ def admin_required(f):
     return decorated_function
 
 
-# Import submodules so their routes register on staff_bp
-import app.routes.staff_auth
-import app.routes.staff_dashboard
-import app.routes.staff_admin
-import app.routes.medical
+def register_staff_routes():
+    """Import and register all staff submodules. Called from create_app()."""
+    # Import submodules so their routes register on staff_bp
+    import app.routes.staff_auth
+    import app.routes.staff_dashboard
+    import app.routes.staff_admin
+    import app.routes.medical

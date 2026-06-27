@@ -75,20 +75,6 @@
 
                 if (select.value === 'Other') {
                     wrapper.classList.remove('hidden');
-                    otherInput.focus();
-                } else {
-                    wrapper.classList.add('hidden');
-                    otherInput.value = '';
-                }
-            }
-
-            function handleSpeciesChange() {
-                const select = document.getElementById('speciesSelect');
-                const wrapper = document.getElementById('speciesOtherWrapper');
-                const otherInput = document.getElementById('speciesOther');
-
-                if (select.value === 'Other') {
-                    wrapper.classList.remove('hidden');
                     wrapper.style.display = 'block';
                     otherInput.required = true;
                     otherInput.focus();
@@ -99,24 +85,22 @@
                     otherInput.value = '';
                 }
             }
+
+            function previewImage(input, previewId) {
+                const preview = document.getElementById(previewId);
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
         </script>
 
     </form>
 
     <p class="center-link"><a href="{{ url_for('public.animal_list') }}">Back to animal list</a></p>
-
-    <script>
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-    </script>
 </div>
 {% endblock %}

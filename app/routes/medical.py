@@ -8,6 +8,9 @@ from app.services.edit_apply import apply_vet_edit, apply_medical_record_edit, a
 
 
 def _paginated_query(cursor, base_query, params, page, per_page=15, count_query=None):
+    # Create a copy to avoid mutating the caller's dict
+    query_params = dict(params)
+
     if count_query is None:
         count_sql = base_query.strip()
         from_idx = count_sql.upper().find(" FROM ")
@@ -18,15 +21,15 @@ def _paginated_query(cursor, base_query, params, page, per_page=15, count_query=
     else:
         count_sql = count_query
 
-    cursor.execute(count_sql, params)
+    cursor.execute(count_sql, query_params)
     total = cursor.fetchone()["total"]
     pages = (total + per_page - 1) // per_page
 
     offset = (page - 1) * per_page
-    params["limit"] = per_page
-    params["offset"] = offset
+    query_params["limit"] = per_page
+    query_params["offset"] = offset
 
-    cursor.execute(base_query + " LIMIT %(limit)s OFFSET %(offset)s", params)
+    cursor.execute(base_query + " LIMIT %(limit)s OFFSET %(offset)s", query_params)
     items = cursor.fetchall()
     return items, total, pages
 

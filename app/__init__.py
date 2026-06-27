@@ -57,6 +57,8 @@ def create_app():
     app.register_blueprint(public_bp)
 
     from app.routes.staff import staff_bp
+    from app.routes.staff import register_staff_routes
+    register_staff_routes()  # Import submodules after staff_bp is created
     app.register_blueprint(staff_bp)
 
     from app.routes.logbook import logbook_bp

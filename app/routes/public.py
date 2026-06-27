@@ -154,7 +154,7 @@ def animal_list():
     per_page = 12
     offset = (page - 1) * per_page
 
-    where_clauses = []
+    where_clauses = ["is_deleted = 0"]
     params = {}
 
     q = request.args.get("q", "").strip()
@@ -184,12 +184,8 @@ def animal_list():
         where_clauses.append("sex = %(sex)s")
         params["sex"] = sex
 
-    where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+    where_sql = " AND ".join(where_clauses)
 
-    if where_sql == "1=1":
-        where_sql = "is_deleted = 0"
-    else:
-        where_sql = where_sql + " AND is_deleted = 0"
     cursor.execute(f"SELECT COUNT(*) as total FROM Animal WHERE {where_sql}", params)
     total = cursor.fetchone()["total"]
     pages = (total + per_page - 1) // per_page

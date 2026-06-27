@@ -88,22 +88,6 @@
             if (select.value === 'Other') {
                 wrapper.classList.remove('hidden');
                 wrapper.style.display = 'block';
-                otherInput.focus();
-            } else {
-                wrapper.classList.add('hidden');
-                wrapper.style.display = 'none';
-                otherInput.value = '';
-            }
-        }
-
-        function handleSpeciesChange() {
-            const select = document.getElementById('speciesSelect');
-            const wrapper = document.getElementById('speciesOtherWrapper');
-            const otherInput = document.getElementById('speciesOther');
-
-            if (select.value === 'Other') {
-                wrapper.classList.remove('hidden');
-                wrapper.style.display = 'block';
                 otherInput.required = true;
                 otherInput.focus();
             } else {

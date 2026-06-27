@@ -36,12 +36,12 @@ table.lb tr:hover td{background:#f8fafc}
 
   <div class="tab-bar">
     <button class="tab-btn active" data-target="t-rescuing">
-      🚨 Being Rescued
+      Being Rescued
       {% if rescuing %}<span class="badge">{{ rescuing|length }}</span>{% endif %}
     </button>
-    <button class="tab-btn" data-target="t-rescues">🐾 Rescue Log</button>
-    <button class="tab-btn" data-target="t-adoptions">🏠 Adoptions</button>
-    <button class="tab-btn" data-target="t-fosters">🤝 Foster Care</button>
+    <button class="tab-btn" data-target="t-rescues">Rescue Log</button>
+    <button class="tab-btn" data-target="t-adoptions">Adoptions</button>
+    <button class="tab-btn" data-target="t-fosters">Foster Care</button>
   </div>
 
   {# TAB: Being Rescued #}
@@ -70,7 +70,7 @@ table.lb tr:hover td{background:#f8fafc}
         </tbody>
       </table>
     </div>
-    {% else %}<p class="empty">✅ No pending rescues right now.</p>{% endif %}
+    {% else %}<p class="empty">No pending rescues right now.</p>{% endif %}
   </div>
 
   {# TAB: Rescue Log #}
