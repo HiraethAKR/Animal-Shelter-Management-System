@@ -6,6 +6,7 @@
 
 CREATE TABLE Animal (
     animal_id INT NOT NULL AUTO_INCREMENT,
+	staff_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(50) NOT NULL,
     species VARCHAR(100) NOT NULL,
     breed VARCHAR(50) DEFAULT NULL,
@@ -17,7 +18,8 @@ CREATE TABLE Animal (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     deleted_at DATETIME DEFAULT NULL,
     deleted_by INT DEFAULT NULL,
-    PRIMARY KEY (animal_id)
+    PRIMARY KEY (animal_id),
+    FOREIGN KEY (staff_id) REFERENCES STAFF(staff_id)
 );
 
 CREATE TABLE Vet (
