@@ -15,9 +15,6 @@
                 <a href="{{ url_for('staff.change_password') }}">Settings</a>
                 <a href="{{ url_for('staff.logout') }}">Log out</a>
             {% else %}
-                <a href="{{ url_for('public.adopt') }}">Adopt</a>
-                <a href="{{ url_for('public.foster') }}">Foster</a>
-                <a href="{{ url_for('public.rescue') }}">Report Rescue</a>
                 <a href="{{ url_for('staff.login') }}">Staff</a>
             {% endif %}
             <a href="{{ url_for('public.donate') }}">Donate</a>

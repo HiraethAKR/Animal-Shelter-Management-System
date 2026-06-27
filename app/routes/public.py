@@ -216,6 +216,7 @@ def animal_list():
         page=page,
         pages=pages,
         total=total,
+        current_args=request.args
     )
 
 
