@@ -14,6 +14,9 @@ CREATE TABLE Animal (
     status ENUM('available','pending','adopted','fostered','unavailable') NOT NULL,
     notes TEXT DEFAULT NULL,
     image_url VARCHAR(255) DEFAULT NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at DATETIME DEFAULT NULL,
+    deleted_by INT DEFAULT NULL,
     PRIMARY KEY (animal_id)
 );
 
@@ -106,6 +109,7 @@ CREATE TABLE Rescue (
     location VARCHAR(150) DEFAULT NULL,
     notes TEXT DEFAULT NULL,
     animal_species VARCHAR(100) NOT NULL,
+    animal_name_snapshot VARCHAR(50) DEFAULT NULL,
     photo_url VARCHAR(255) DEFAULT NULL,
     status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
     submitted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

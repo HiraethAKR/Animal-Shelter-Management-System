@@ -476,7 +476,6 @@ tr:last-child td {
 .mb-1 { margin-bottom: 8px; }
 .mb-2 { margin-bottom: 16px; }
 .hidden { display: none; }
-
 /* =====================================================================
    Centered Form Card
    ===================================================================== */
@@ -707,51 +706,5 @@ td:last-child {
         padding: 24px;
         border-radius: 0;
         box-shadow: none;
-    }
-
-    .no-photo {
-    height: 160px;
-    background: #e0e6ed;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #888;
-    font-size: 0.85rem;
-    }
-
-    .card-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    }
-
-    .pagination {
-    display: flex;
-    gap: 0.25rem;
-    justify-content: center;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-    }
-
-    .page-btn {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    text-decoration: none;
-    color: inherit;
-    }
-
-    .page-btn.active {
-    background: #3a7bd5;
-    color: white;
-    border-color: #3a7bd5;
-    font-weight: 600;
-    }
-
-    .page-ellipsis {
-    padding: 0.4rem 0.5rem;
-    color: #888;
     }
 }
